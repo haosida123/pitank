@@ -16,25 +16,9 @@ import RPIservo
 import functions
 import robotLight
 import switch
-import socket
-
-#websocket
-import asyncio
-import websockets
 
 import json
 import app
-
-# OLED_connection = 1
-# try:
-#     import OLED
-#     screen = OLED.OLED_ctrl()
-#     screen.start()
-#     screen.screen_show(1, 'ADEEPT.COM')
-# except:
-#     OLED_connection = 0
-#     print('OLED disconnected')
-#     pass
 
 functionMode = 0
 speed_set = 100
@@ -85,30 +69,6 @@ def servoPosInit():
     H_sc.initConfig(3,init_pwm3,1)
     G_sc.initConfig(4,init_pwm4,1)
 
-
-def replace_num(initial,new_num):   #Call this function to replace data in '.txt' file
-    global r
-    newline=""
-    str_num=str(new_num)
-    with open(thisPath+"/RPIservo.py","r") as f:
-        for line in f.readlines():
-            if(line.find(initial) == 0):
-                line = initial+"%s" %(str_num+"\n")
-            newline += line
-    with open(thisPath+"/RPIservo.py","w") as f:
-        f.writelines(newline)
-
-
-def FPV_thread():
-    global fpv
-    fpv=FPV.FPV()
-    fpv.capture_thread(addr[0])
-
-
-# def ap_thread():
-#     os.system("sudo create_ap wlan0 eth0 Adeept 12345678")
-
-
 def functionSelect(command_input, response):
     global functionMode
     if 'scan' == command_input:
@@ -122,14 +82,10 @@ def functionSelect(command_input, response):
             time.sleep(0.3)
 
     elif 'findColor' == command_input:
-        # if OLED_connection:
-            # screen.screen_show(5,'FindColor')
         if modeSelect == 'PT':
             flask_app.modeselect('findColor')
 
     elif 'motionGet' == command_input:
-        # if OLED_connection:
-            # screen.screen_show(5,'MotionGet')
         flask_app.modeselect('watchDog')
 
     elif 'stopCV' == command_input:
@@ -139,8 +95,6 @@ def functionSelect(command_input, response):
         switch.switch(3,0)
 
     elif 'police' == command_input:
-        # if OLED_connection:
-            # screen.screen_show(5,'POLICE')
         RL.police()
 
     elif 'policeOff' == command_input:
@@ -148,8 +102,6 @@ def functionSelect(command_input, response):
         move.motorStop()
 
     elif 'automatic' == command_input:
-        # if OLED_connection:
-            # screen.screen_show(5,'Automatic')
         if modeSelect == 'PT':
             fuc.automatic()
         else:
@@ -161,16 +113,12 @@ def functionSelect(command_input, response):
 
     elif 'trackLine' == command_input:
         fuc.trackLine()
-        # if OLED_connection:
-            # screen.screen_show(5,'TrackLine')
 
     elif 'trackLineOff' == command_input:
         fuc.pause()
         move.motorStop()
 
     elif 'steadyCamera' == command_input:
-        # if OLED_connection:
-            # screen.screen_show(5,'SteadyCamera')
         fuc.steady(T_sc.lastPos[2])
 
     elif 'steadyCameraOff' == command_input:
@@ -475,12 +423,6 @@ async def recv_msg(websocket):
                 color = data['data']
                 flask_app.colorFindSet(color[0],color[1],color[2])
 
-        # if not functionMode:
-            # if OLED_connection:
-                # screen.screen_show(5,'Functions OFF')
-        # else:
-            # pass
-
         print(data)
         response = json.dumps(response)
         await websocket.send(response)
@@ -505,7 +447,6 @@ if __name__ == '__main__':
     try:
         RL=robotLight.RobotLight()
         RL.start()
-        # RL.breath(70,70,255)
     except:
         print('Use "sudo pip3 install rpi_ws281x" to install WS_281x package\n使用"sudo pip3 install rpi_ws281x"命令来安装rpi_ws281x')
         pass

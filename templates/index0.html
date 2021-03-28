@@ -1,0 +1,62 @@
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" $
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+</head>
+
+<body>
+<div class="Division">
+<h4> Control Panel </h4>
+<form action="/forward/" method="post">
+    <button name="forwardBtn" type="submit">Forward</button>
+</form>
+
+<form action="/back/" method="post">
+    <button name="backBtn" type="submit">Back</button>
+</form>
+
+
+<form action="/left/" method="post">
+    <button name="leftBtn" type="submit">left</button>
+</form>
+
+<form action="/right/" method="post">
+    <button name="rightBtn" type="submit">right</button>
+</form>
+</div>
+
+<div class="Division" id="vid"> <img src="/video_feed"> </div>
+<!-- <div class="Division" id="vid"> <img src="{{ url_for('video_feed') }}"> </div> -->
+
+<div>
+<!-- <div class="Division"> -->
+<button  onclick="hidevideo()">Toggle video</button>
+</div>
+<div>
+    <p id="debug">
+    
+    </p>
+</div>
+<script>
+function hidevideo() {
+    var x = document.getElementById("vid");
+    if (x.style.display === "none") {
+        // console.log("here")
+        x.style.display = "block";
+        // $("#debug").text("block");
+        str='<div class="Division" id="vid"> <img src="/video_feed"> </div>';
+        // alert(str);
+        $('#vid').replaceWith(str);
+    } else {
+        x.style.display = "none";
+        str='<div class="Division" id="vid"> </div>';
+        $('#vid').replaceWith(str);
+        $('#vid').css("display", "none");
+    }
+}
+</script>
+
+<!--<p> test {{ forward_message }} {{second}}</p>-->
+</body>

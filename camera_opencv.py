@@ -6,8 +6,10 @@ import numpy as np
 import move
 import switch
 import datetime
-import Kalman_filter
-import PID
+from utils import Kalman_filter
+from utils import PID
+# import Kalman_filter
+# import PID
 import time
 import threading
 import imutils
@@ -420,32 +422,49 @@ class Camera(BaseCamera):
 
     @staticmethod
     def frames():
-        camera = cv2.VideoCapture(Camera.video_source)
-        if not camera.isOpened():
-            raise RuntimeError('Could not start camera.')
+        # class Vcwrap:
+        #     def __init__(self) -> None:
+        #         pass
 
-        cvt = CVThread()
-        cvt.start()
+        #     def __enter__(self):
+        #         return cv2.VideoCapture(Camera.video_source)
 
-        while True:
-            # read current frame
-            _, img = camera.read()
+        #     def __exit__(self):
+        #         print('camera released')
+        #         camera.release()
+        #         cv2.destroyAllWindows()
 
-            if Camera.modeSelect == 'none':
-                switch.switch(1,0)
-                cvt.pause()
-            else:
-                if cvt.CVThreading:
-                    pass
+        # with Vcwrap() as camera:
+        try:
+            camera = cv2.VideoCapture(Camera.video_source)
+            if not camera.isOpened():
+                raise RuntimeError('Could not start camera.')
+
+            cvt = CVThread()
+            cvt.start()
+
+            while True:
+                # read current frame
+                _, img = camera.read()
+
+                if Camera.modeSelect == 'none':
+                    switch.switch(1,0)
+                    cvt.pause()
                 else:
-                    cvt.mode(Camera.modeSelect, img)
-                    cvt.resume()
-                try:
-                    img = cvt.elementDraw(img)
-                except:
-                    pass
-            
+                    if cvt.CVThreading:
+                        pass
+                    else:
+                        cvt.mode(Camera.modeSelect, img)
+                        cvt.resume()
+                    try:
+                        img = cvt.elementDraw(img)
+                    except:
+                        print('opencv_debug')
+                        pass
 
-
-            # encode as a jpeg image and return it
-            yield cv2.imencode('.jpg', img)[1].tobytes()
+                # encode as a jpeg image and return it
+                yield cv2.imencode('.jpg', img)[1].tobytes()
+        finally:
+            camera.release()
+            cv2.destroyAllWindows()
+            print('camera released')

@@ -1,80 +1,82 @@
-#!/usr/bin/env python
-from importlib import import_module
-import os
-from flask import Flask, render_template, Response, send_from_directory
-from flask_cors import *
-# import camera driver
-
+from flask import Flask, render_template, Response, request
 from camera_opencv import Camera
-import threading
-
-# Raspberry Pi camera module (requires picamera package)
-# from camera_pi import Camera
+# from camera import Camera
+import time  # Import the Time library
+from move import Move
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
-camera = Camera()
+
+move = None
+movetime = 0.2
+
+
+@app.route('/')
+def index():
+    message = "ahhhhhhh"
+    return render_template('index.html', message=message)
+
+# @app.route("/test")
+# def test():
+#     return render_template('test.html')
+
+@app.route("/stream/")
+def stream():
+    return render_template('stream.html')
+
 
 def gen(camera):
-    """Video streaming generator function."""
     while True:
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+
 @app.route('/video_feed')
 def video_feed():
-    """Video streaming route. Put this in the src attribute of an img tag."""
-    return Response(gen(camera),
+    return Response(gen(Camera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
+@app.route("/forward")
+def move_forward():
+    speed_pct = int(request.args.get('speed_pct'))
+    move.speed = speed_pct
+    move.move('forward', 'no')
+    return "OK"
 
-@app.route('/api/img/<path:filename>')
-def sendimg(filename):
-    return send_from_directory(dir_path+'/dist/img', filename)
+@app.route("/backward")
+def move_backward():
+    speed_pct = int(request.args.get('speed_pct'))
+    move.speed = speed_pct
+    move.move('backward', 'no')
+    return "OK"
 
-@app.route('/js/<path:filename>')
-def sendjs(filename):
-    return send_from_directory(dir_path+'/dist/js', filename)
+@app.route("/turn_right")
+def turn_right():
+    speed_pct = int(request.args.get('speed_pct'))
+    move.speed = speed_pct
+    move.move('no', 'right')
+    return "OK"
 
-@app.route('/css/<path:filename>')
-def sendcss(filename):
-    return send_from_directory(dir_path+'/dist/css', filename)
+@app.route("/turn_left")
+def turn_left():
+    speed_pct = int(request.args.get('speed_pct'))
+    move.speed = speed_pct
+    move.move('no', 'left')
+    return "OK"
 
-@app.route('/api/img/icon/<path:filename>')
-def sendicon(filename):
-    return send_from_directory(dir_path+'/dist/img/icon', filename)
-
-@app.route('/fonts/<path:filename>')
-def sendfonts(filename):
-    return send_from_directory(dir_path+'/dist/fonts', filename)
-
-@app.route('/<path:filename>')
-def sendgen(filename):
-    return send_from_directory(dir_path+'/dist', filename)
-
-@app.route('/')
-def index():
-    return send_from_directory(dir_path+'/dist', 'test.html')
-    # return send_from_directory(dir_path+'/dist', 'index.html')
-
-class webapp:
-    def __init__(self):
-        self.camera = camera
-
-    def modeselect(self, modeInput):
-        Camera.modeSelect = modeInput
-
-    def colorFindSet(self, H, S, V):
-        camera.colorFindSet(H, S, V)
-
-    def thread(self):
-        app.run(host='0.0.0.0', threaded=True)
-
-    def startthread(self):
-        fps_threading=threading.Thread(target=self.thread)         #Define a thread for FPV and OpenCV
-        fps_threading.setDaemon(False)                             #'True' means it is a front thread,it would close when the mainloop() closes
-        fps_threading.start()                                     #Thread starts
+@app.route("/stop")
+def move_left():
+    move.stop()
+    forward_message = "Stopped..."
+    return render_template('index.html', forward_message=forward_message)
 
 
+if __name__ == '__main__':
+    # global move
+    # global movetime
+    movetime = 0.2
+    with Move() as move:
+        # move.move('forward', 'no')
+        # time.sleep(movetime)
+        # move.stop()
+        app.run(debug=True, host='0.0.0.0', threaded=True)

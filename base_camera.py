@@ -36,6 +36,8 @@ class CameraEvent(object):
                 # if this client's event is not set, then set it
                 # also update the last set timestamp to now
                 event[0].set()
+                # if not int(time.time() * 1000) % 60:  # randomly
+                #     print(f"frame rate: {1./(now-event[1])}")
                 event[1] = now
             else:
                 # if the client's event is already set, it means the client
