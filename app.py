@@ -7,7 +7,7 @@ from move import Move
 app = Flask(__name__)
 
 move = None
-movetime = 0.2
+# movetime = 0.2
 
 
 @app.route('/')
@@ -64,9 +64,20 @@ def turn_left():
     move.move('no', 'left')
     return "OK"
 
+@app.route("/camera_up")
+def camera_up():
+    move.servo.move("camera", "up")
+    return "OK"
+
+@app.route("/camera_down")
+def camera_down():
+    move.servo.move("camera", "down")
+    return "OK"
+
 @app.route("/stop")
 def move_left():
     move.stop()
+    move.servo.stopWiggle()
     forward_message = "Stopped..."
     return render_template('index.html', forward_message=forward_message)
 

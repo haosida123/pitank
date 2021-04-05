@@ -2,21 +2,15 @@
 
 <head>
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-<style>
-  img {
-      margin-top: 25px;
-      margin-bottom: 25px;
-    }
-</style>
+<link rel="stylesheet" href="{{ url_for('.static', filename='styles/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('.static', filename='styles/font-awesome.min.css') }}">
 
-<script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous"></script>
-
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
 <script>
 
@@ -59,17 +53,19 @@ function set_speed() {
 }
 
 function togglevideo() {
+    console.log("toggled")
     var x = document.getElementById("vid");
     if (x.style.display === "none") {
-        // console.log("here")
         x.style.display = "block";
         // $("#debug").text("block");
-        str='<div class="Division" id="vid"> <img src="/video_feed"> </div>';
+        str='<div id="vid"> <img src="/video_feed"> </div>';
+        // str='<div class="Division" id="vid"> <img src="/video_feed"> </div>';
         // alert(str);
         $('#vid').replaceWith(str);
     } else {
         x.style.display = "none";
-        str='<div class="Division" id="vid"> </div>';
+        str='<div id="vid"> </div>';
+        // str='<div class="Division" id="vid"> </div>';
         $('#vid').replaceWith(str);
         $('#vid').css("display", "none");
     }
@@ -122,10 +118,13 @@ function turn_right(){
 
 
 function stop(){
+  function stop_once(){
         turn_right_fired = false;
         turn_left_fired = false;
         backward_fired = false;
         forward_fired = false;
+        down_fired = false;
+        up_fired = false;
 
         button = document.getElementById('turn right');
         button.className = 'btn btn-default btn-lg active';
@@ -135,11 +134,37 @@ function stop(){
         button.className = 'btn btn-default btn-lg active';
         button = document.getElementById('backward');
         button.className = 'btn btn-default btn-lg active';
+        button = document.getElementById('down');
+        button.className = 'btn btn-default btn-lg active';
+        button = document.getElementById('up');
+        button.className = 'btn btn-default btn-lg active';
 
         console.log('stop');
         $.get("/stop")
+  }
+  stop_once()
+  setTimeout(stop_once(), 500)
 }
 
+function camera_up(){
+        if(!up_fired) {
+            up_fired = true;
+            button = document.getElementById('up');
+            button.className = 'btn btn-success btn-lg active';
+            console.log('camera up');
+        }
+        $.get("/camera_up")
+}
+
+function camera_down(){
+          if(!down_fired){
+            down_fired = true;
+            button = document.getElementById('down');
+            button.className = 'btn btn-success btn-lg active';
+            console.log('camera down');
+          }
+          $.get("/camera_down")
+}
 
 // keydown event
 document.onkeydown  = function() {
@@ -161,25 +186,11 @@ document.onkeydown  = function() {
     }
     //w
     if(event.keyCode == 87) {
-        if(!up_fired) {
-            up_fired = true;
-            button = document.getElementById('up');
-            button.className = 'btn btn-success btn-lg active';
-            console.log('camera up');
-
-        }
-        $.get("/camera_up")
+      camera_up()
     }
     //s
     if(event.keyCode == 83) {
-          if(!down_fired){
-            down_fired = true;
-            button = document.getElementById('down');
-            button.className = 'btn btn-success btn-lg active';
-            console.log('camera down');
-
-          }
-          $.get("/camera_down")
+      camera_down()
     }
     //a
     if(event.keyCode == 65) {
@@ -417,25 +428,11 @@ document.onkeyup = function() {
 
     //w
     if(event.keyCode == 87) {
-      if(up_fired) {
-        up_fired = false;
-
-        button = document.getElementById('up');
-        button.className = 'btn btn-default btn-lg active';
-
-        console.log('stop camera up');
-      }
+      stop()
     }
     //s
     if(event.keyCode == 83) {
-      if(down_fired) {
-        down_fired = false;
-
-        button = document.getElementById('down');
-        button.className = 'btn btn-default btn-lg active';
-
-        console.log('stop camera down');
-      }
+      stop()
     }
     //a
     if(event.keyCode == 65) {
@@ -624,33 +621,37 @@ document.onkeyup = function() {
 
 </body>
 
-<div class="container">
-  <div class="row">
-    <center>
+<!-- <div class="container"> -->
+<div>
+  <div class="row no-gutters">
+    <!-- <center> -->
+      <div class="col-6">
+        <button  onclick="togglevideo()" type="button" class="btn btn-outline-secondary">
+          <span>Toggle video</span>
+          <!-- <span class="glyphicon" aria-hidden="true">Toggle video</span> -->
+        </button>
+        <!-- <br><br><br> -->
 
-      <button  onclick="togglevideo()" type="button" class="btn btn-outline-secondary">
-        <span>Toggle video</span>
-        <!-- <span class="glyphicon" aria-hidden="true">Toggle video</span> -->
-      </button>
-      <br><br><br>
-
-      <!--
-      <img src="/stream" class="img-rounded">
-      -->
-      <div id="vid" style="display: none;">
-      <!-- <img src="{{ url_for('video_feed') }}"> -->
+        <!--
+        <img src="/stream" class="img-rounded">
+        -->
+        <div id="vid">
+        <!-- <div id="vid" style="display: none;"> -->
+        <img src="{{ url_for('video_feed') }}">
+        </div>
+      <!-- </center> -->
       </div>
-    </center>
-  </div>
-</div>
+  <!-- </div> -->
+<!-- </div> -->
 
 <!-- control buttons -->
-<div class="container">
-  <div class="row">
+<!-- <div class="container"> -->
+  <!-- <div class="row"> -->
 
-    <center>
+      <div class="col-6">
+    <!-- <center> -->
 
-      <p>Motor control with arrow key</p><br>
+      <p>Motor control with arrow key</p>
 
       <div class="input-group mb-3">
         <input id="speed_pct" type="text" class="form-control" placeholder="Motor speed percentage, range in 0~100, default 100" aria-label="Speed percentage" aria-describedby="basic-addon2">
@@ -659,89 +660,90 @@ document.onkeyup = function() {
         </div>
       </div>
 
-      <button id="turn left" type="button" class="btn btn-default btn-lg active" onmousedown="turn_left()" onmouseup="stop()">
-        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+      <button id="turn left" type="button" class="btn btn-default btn-lg active" onmousedown="turn_left()" onmouseup="stop()" ontouchstart="turn_left()" ontouchend="stop()" ontouchcancel="stop()">
+        <span class="fa fa-arrow-left" aria-hidden="true"></span>
       </button>
 
-      <button id="forward" type="button" class="btn btn-default btn-lg active" onmousedown="forward()" onmouseup="stop()">
-        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+      <button id="forward" type="button" class="btn btn-default btn-lg active" onmousedown="forward()" onmouseup="stop()" ontouchstart="forward()" ontouchend="stop()" ontouchcancel="stop()">
+        <span class="fa fa-arrow-up" aria-hidden="true"></span>
       </button>
 
-      <button id="backward" type="button" class="btn btn-default btn-lg active" onmousedown="backward()" onmouseup="stop()">
-        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+      <button id="backward" type="button" class="btn btn-default btn-lg active" onmousedown="backward()" onmouseup="stop()" ontouchstart="backward()" ontouchend="stop()" ontouchcancel="stop()">
+        <span class="fa fa-arrow-down" aria-hidden="true"></span>
       </button>
 
-      <button id="turn right" type="button" class="btn btn-default btn-lg active" onmousedown="turn_right()" onmouseup="stop()">
-        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+      <button id="turn right" type="button" class="btn btn-default btn-lg active" onmousedown="turn_right()" onmouseup="stop()" ontouchstart="turn_right()" ontouchend="stop()" ontouchcancel="stop()">
+        <span class="fa fa-arrow-right" aria-hidden="true"></span>
       </button>
-      <br><br><br>
+
       <p>Camera servo control with key a,s,w,d, f to reset, g to take photo</p>
       <button id="left" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+        <span class="fa fa-arrow-left" aria-hidden="true"></span>
       </button>
-      <button id="up" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+      <button id="up" type="button" class="btn btn-default btn-lg active" onmousedown="camera_up()" onmouseup="stop()" ontouchstart="camera_up()" ontouchend="stop()" ontouchcancel="stop()">
+        <span class="fa fa-arrow-up" aria-hidden="true"></span>
       </button>
-      <button id="down" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+      <button id="down" type="button" class="btn btn-default btn-lg active" onmousedown="camera_down()" onmouseup="stop()" ontouchstart="camera_down()" ontouchend="stop()" ontouchcancel="stop()">
+        <span class="fa fa-arrow-down" aria-hidden="true"></span>
       </button>
 
       <button id="right" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+        <span class="fa fa-arrow-right" aria-hidden="true"></span>
       </button>
 
       <button id="reset" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+        <span class="fa fa-refresh" aria-hidden="true"></span>
       </button>
       <button id="take_photo" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-screenshot" aria-hidden="true"></span>
+        <span class="fa fa-camera" aria-hidden="true"></span>
       </button>
       <br><br><br>
       <p>Back ultrasonic servo control with key z,c, x to reset, v to detect</p>
       <button id="back_uc_left" type="button" class="btn btn-default btn-lg active">
-        <span class=" glyphicon glyphicon-backward" aria-hidden="true"></span>
+        <span class=" fa fa-backward" aria-hidden="true"></span>
       </button>
       <button id="back_uc_reset" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+        <span class="fa fa-stop" aria-hidden="true"></span>
       </button>
       <button id="back_uc_right" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-forward" aria-hidden="true"></span>
+        <span class="fa fa-forward" aria-hidden="true"></span>
       </button>
       <button id="back_distance" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-screenshot" aria-hidden="true"></span>
+        <span class="fa fa-camera" aria-hidden="true"></span>
       </button>
       <p>Left ultrasonic servo control with key j,l,k to reset, h to detect</p>
       <button id="left_uc_left" type="button" class="btn btn-default btn-lg active">
-        <span class=" glyphicon glyphicon-backward" aria-hidden="true"></span>
+        <span class=" fa fa-backward" aria-hidden="true"></span>
       </button>
       <button id="left_uc_reset" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+        <span class="fa fa-stop" aria-hidden="true"></span>
       </button>
       <button id="left_uc_right" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-forward" aria-hidden="true"></span>
+        <span class="fa fa-forward" aria-hidden="true"></span>
       </button>
       <button id="left_distance" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-screenshot" aria-hidden="true"></span>
+        <span class="fa fa-camera" aria-hidden="true"></span>
       </button>
       <p>Right ultrasonic servo control with key u,o, i to reset, y to detect</p>
       <button id="right_uc_left" type="button" class="btn btn-default btn-lg active">
-        <span class=" glyphicon glyphicon-backward" aria-hidden="true"></span>
+        <span class=" fa fa-backward" aria-hidden="true"></span>
       </button>
       <button id="right_uc_reset" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+        <span class="fa fa-stop" aria-hidden="true"></span>
       </button>
       <button id="right_uc_right" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-forward" aria-hidden="true"></span>
+        <span class="fa fa-forward" aria-hidden="true"></span>
       </button>
       <button id="right_distance" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-screenshot" aria-hidden="true"></span>
+        <span class="fa fa-camera" aria-hidden="true"></span>
       </button>
       <p>Obstacle avoiding mode</p>
       <button id="obstacle_avoiding" type="button" class="btn btn-default btn-lg active">
-        <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+        <span class="fa fa-play" aria-hidden="true"></span>
       </button>
-    </center>
+    <!-- </center> -->
 
+    </div>
   </div>
 </div>
 

@@ -1,11 +1,25 @@
-.Division{
+/* .Division{
    float: left;
     width: 200px;
     height: 200px;
     border: 2px solid #000000;
     margin-left: 10px;
+} */
+
+.no-gutters {
+  margin-right: 15;
+  margin-left: 15;
+
+  /* > .col,
+  > [class*="col-"] {
+    padding-right: 0;
+    padding-left: 0;
+  } */
 }
 
-.p{
-   
+img {
+    /* margin-top: 25px; */
+    /* margin-bottom: 25px; */
+    max-width: 90%;
+    width: 90%;
 }

@@ -7,6 +7,7 @@
 # Date        : 2019/07/24
 import time
 import RPi.GPIO as GPIO
+import RPIservo
 
 # motor_EN_A: Pin7  |  motor_EN_B: Pin11
 # motor_A:  Pin8,Pin10    |  motor_B: Pin13,Pin12
@@ -114,6 +115,9 @@ class Move(object):
     def __init__(self) -> None:
         setup()
         self.speed = 100
+        self.servo = RPIservo.ServoCtrl()
+        self.servo.start()
+        self.servo.moveInit()
 
     def move(self, direction, turn, radius=0.6):   # 0 < radius <= 1  
         speed = self.speed
@@ -158,6 +162,7 @@ class Move(object):
     def __exit__(self, *args):
         # def __exit__(self, exception_type, exception_value, traceback):
         destroy()
+        self.servo.stop()
         print(f"Move({args}) __exit__ called")
 
 

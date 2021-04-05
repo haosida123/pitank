@@ -59,9 +59,9 @@ class ServoCtrl(threading.Thread):
         self.lastPos = [p for p in self.initPos]
         self.ingGoal = [p for p in self.initPos]
         self.maxPos = [560, 560, 560, 560, 560, 560, 560,
-            560, 560, 560, 560, 560, 560, 560, 560, 560]
+            560, 560, 560, 560, 320, 560, 560, 560, 560]
         self.minPos = [100, 100, 100, 100, 100, 100, 100,
-            100, 100, 100, 100, 100, 100, 100, 100, 100]
+            100, 100, 100, 100, 150, 100, 100, 100, 100]
         self.scSpeed = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         self.ctrlRangeMax = 560
@@ -249,6 +249,17 @@ class ServoCtrl(threading.Thread):
     def stopWiggle(self):
         self.pause()
         self.posUpdate()
+
+    def move(self, part, direction, speed=None):
+        id = {"camera": 11, "arm": 12, "hand": 13, "rotate": 14, "grab": 15}[
+            part]
+        if id in [11, 13]:
+            direction = {"up": -1, "down":1}[direction]
+        elif id in [12, 14, 15]:
+            direction = {"grab": 1, "right": 1, "loose": -1, "left": -1,
+                         "up": -1, "down": 1}[direction]
+        speed = 3 if speed is None else speed
+        self.singleServo(id, direction, speed)
 
     def singleServo(self, ID, direcInput, speedSet):
         self.wiggleID = ID
