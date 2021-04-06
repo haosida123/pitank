@@ -2,6 +2,7 @@ from flask import Flask, render_template, Response, request
 from camera_opencv import Camera
 # from camera import Camera
 import time  # Import the Time library
+import datetime
 from move import Move
 
 app = Flask(__name__)
@@ -32,10 +33,10 @@ def stream():
 
 
 def gen(camera):
+    global setfps
     while True:
-        if setfps < 30:
-            time.sleep(1 / setfps)
-        frame = camera.get_frame()
+        # print(str(datetime.datetime.now())[:21])
+        frame = camera.get_frame(setfps)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 

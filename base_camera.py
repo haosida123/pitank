@@ -62,6 +62,7 @@ class BaseCamera(object):
     frame = None  # current frame is stored here by background thread
     last_access = 0  # time of last client access to the camera
     event = CameraEvent()
+    fps = 30
 
     def __init__(self):
         """Start the background camera thread if it isn't running yet."""
@@ -76,7 +77,11 @@ class BaseCamera(object):
             while self.get_frame() is None:
                 time.sleep(0)
 
-    def get_frame(self):
+    def get_frame(self, fps=None):
+        if fps is not None:
+            BaseCamera.fps = fps
+            # time.sleep(1 / fps)
+
         """Return the current camera frame."""
         BaseCamera.last_access = time.time()
 

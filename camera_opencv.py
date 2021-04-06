@@ -465,6 +465,9 @@ class Camera(BaseCamera):
                 return lookUpTable
 
             while True:
+                if BaseCamera.fps <= 30:
+                    time.sleep(1 / BaseCamera.fps)
+
                 # read current frame
                 _, img = camera.read()
 
@@ -497,6 +500,7 @@ class Camera(BaseCamera):
                 cv2.putText(img,str(datetime.datetime.now())[:21],(10,30), font,
                            .5,(0, 255, 0),2,cv2.LINE_AA)
                         #    .5,(255,255,255),2,cv2.LINE_AA)
+                # print(str(datetime.datetime.now())[:21])
                 yield cv2.imencode('.jpg', img)[1].tobytes()
         finally:
             camera.release()
