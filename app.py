@@ -7,6 +7,7 @@ from move import Move
 app = Flask(__name__)
 
 move = None
+setfps = 30
 # movetime = 0.2
 
 
@@ -19,6 +20,12 @@ def index():
 # def test():
 #     return render_template('test.html')
 
+@app.route("/fps")
+def fps():
+    global setfps
+    setfps = int(request.args.get('setfps'))
+    return "OK"
+
 @app.route("/stream/")
 def stream():
     return render_template('stream.html')
@@ -26,6 +33,8 @@ def stream():
 
 def gen(camera):
     while True:
+        if setfps < 30:
+            time.sleep(1 / setfps)
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')

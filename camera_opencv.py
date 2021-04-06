@@ -14,6 +14,7 @@ import time
 import threading
 import imutils
 import robotLight
+import math
 
 led = robotLight.RobotLight()
 pid = PID.PID()
@@ -443,9 +444,37 @@ class Camera(BaseCamera):
             cvt = CVThread()
             cvt.start()
 
+            last_correction = - float('inf')
+
+            def gamma_correction(img):
+                # convert img to HSV
+                hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+                hue, sat, val = cv2.split(hsv)
+
+                # compute gamma = log(mid*255)/log(mean)
+                mid = 0.6
+                mean = np.mean(hsv[:, :, 2])
+                # mean = np.mean(val)
+                gamma = math.log(mean) / math.log(mid * 255)
+                gamma = gamma ** 1.8 # gamma not enough
+                #gamma = math.log(mid * 255) / math.log(mean)
+                # print(f'mean={mean}, gamma = {gamma}')
+                lookUpTable = np.empty((1, 256), np.uint8)
+                for i in range(256):
+                    lookUpTable[0, i] = np.clip(pow(i / 255.0, gamma) * 255.0, 0, 255)
+                return lookUpTable
+
             while True:
                 # read current frame
                 _, img = camera.read()
+
+                # gamma correction
+                if time.time() - last_correction > 10:
+                    lookUpTable = gamma_correction(img)
+                    last_correction = time.time()
+                hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+                hsv[:, :, 2] = cv2.LUT(hsv[:, :, 2], lookUpTable)
+                img = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
 
                 if Camera.modeSelect == 'none':
                     switch.switch(1,0)

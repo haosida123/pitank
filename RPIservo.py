@@ -258,7 +258,7 @@ class ServoCtrl(threading.Thread):
         elif id in [12, 14, 15]:
             direction = {"grab": 1, "right": 1, "loose": -1, "left": -1,
                          "up": -1, "down": 1}[direction]
-        speed = 3 if speed is None else speed
+        speed = 2 if speed is None else speed
         self.singleServo(id, direction, speed)
 
     def singleServo(self, ID, direcInput, speedSet):

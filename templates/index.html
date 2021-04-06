@@ -52,6 +52,13 @@ function set_speed() {
   console.log(speed_pct);
 }
 
+// set fps
+function set_fps() {
+  fps = document.getElementById("fps set").value;
+  console.log(fps);
+  $.get("/fps?setfps="+fps)
+}
+
 function togglevideo() {
     console.log("toggled")
     var x = document.getElementById("vid");
@@ -68,6 +75,8 @@ function togglevideo() {
         // str='<div class="Division" id="vid"> </div>';
         $('#vid').replaceWith(str);
         $('#vid').css("display", "none");
+	location.reload();
+	return false;
     }
 }
 
@@ -635,10 +644,22 @@ document.onkeyup = function() {
         <!--
         <img src="/stream" class="img-rounded">
         -->
-        <div id="vid">
-        <!-- <div id="vid" style="display: none;"> -->
-        <img src="{{ url_for('video_feed') }}">
+        <!-- <div id="vid"> -->
+        <div id="vid" style="display: none;">
+        <!-- <img src="{{ url_for('video_feed') }}"> -->
         </div>
+
+        <div class="row">
+        <div class="col-8">
+        <div class="input-group mb-3">
+          <input id="fps set" type="text" class="form-control" placeholder="fps setting default=30" aria-label="fps" aria-describedby="basic-addon2">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" onclick="set_fps()">Set fps</button>
+          </div>
+        </div>
+        </div>
+        </div>
+
       <!-- </center> -->
       </div>
   <!-- </div> -->

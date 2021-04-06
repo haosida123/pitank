@@ -10,16 +10,16 @@
   margin-right: 15;
   margin-left: 15;
 
-  /* > .col,
+  > .col,
   > [class*="col-"] {
-    padding-right: 0;
-    padding-left: 0;
-  } */
+    padding-right: 10;
+    padding-left: 10;
+  }
 }
 
 img {
     /* margin-top: 25px; */
     /* margin-bottom: 25px; */
-    max-width: 90%;
-    width: 90%;
+    max-width: 95%;
+    width: 95%;
 }
