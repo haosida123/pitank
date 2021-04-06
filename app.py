@@ -24,7 +24,7 @@ def index():
 @app.route("/fps")
 def fps():
     global setfps
-    setfps = int(request.args.get('setfps'))
+    setfps = float(request.args.get('setfps'))
     return "OK"
 
 @app.route("/stream/")
