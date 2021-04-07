@@ -8,7 +8,7 @@ from move import Move
 app = Flask(__name__)
 
 move = None
-setfps = 30
+setfps = 10
 # movetime = 0.2
 
 

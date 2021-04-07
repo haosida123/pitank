@@ -53,8 +53,10 @@ function set_speed() {
 }
 
 // set fps
-function set_fps() {
-  fps = document.getElementById("fps set").value;
+function set_fps(fps=null) {
+  if (fps==null) {
+    fps = document.getElementById("fps set").value;
+  }
   console.log(fps);
   $.get("/fps?setfps="+fps)
 }
@@ -634,7 +636,7 @@ document.onkeyup = function() {
 <div>
   <div class="row no-gutters">
     <!-- <center> -->
-      <div class="col-6">
+      <div class="col-8">
         <button  onclick="togglevideo()" type="button" class="btn btn-outline-secondary">
           <span>Toggle video</span>
           <!-- <span class="glyphicon" aria-hidden="true">Toggle video</span> -->
@@ -651,11 +653,26 @@ document.onkeyup = function() {
 
         <div class="row">
         <div class="col-8">
-        <div class="input-group mb-3">
+        <!-- <div class="input-group mb-3">
           <input id="fps set" type="text" class="form-control" placeholder="fps setting default=30" aria-label="fps" aria-describedby="basic-addon2">
           <div class="input-group-append">
             <button class="btn btn-outline-secondary" type="button" onclick="set_fps()">Set fps</button>
           </div>
+        </div> -->
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="fps selection">fps setting</label>
+          </div>
+          <select class="custom-select" id="fps set" onchange="set_fps()">
+            <option selected>choose fps</option>
+            <option value="0.3">0.3</option>
+            <option value="0.5">0.5</option>
+            <option value="1">1</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </select>
         </div>
         </div>
         </div>
@@ -669,7 +686,7 @@ document.onkeyup = function() {
 <!-- <div class="container"> -->
   <!-- <div class="row"> -->
 
-      <div class="col-6">
+      <div class="col-4">
     <!-- <center> -->
 
       <p>Motor control with arrow key</p>
