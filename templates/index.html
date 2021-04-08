@@ -53,10 +53,8 @@ function set_speed() {
 }
 
 // set fps
-function set_fps(fps=null) {
-  if (fps==null) {
-    fps = document.getElementById("fps set").value;
-  }
+function set_fps() {
+  fps = document.getElementById("fps set").value;
   console.log(fps);
   $.get("/fps?setfps="+fps)
 }
@@ -81,6 +79,17 @@ function togglevideo() {
 	return false;
     }
 }
+
+function update_values() {
+            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+            $.getJSON($SCRIPT_ROOT+"/_info",
+                function(data) {
+                    $("#info").text("cpu temp: " + data.cpu_temp +
+                      "\xB0C\ncpu use: " + data.cpu_use + "%\nram: " + data.ram + "%")
+                });
+}
+
+setInterval(update_values, 2000)
 
 function forward(){
         if(!forward_fired && !backward_fired) {
@@ -127,32 +136,32 @@ function turn_right(){
         }
 }
 
+function stop_once(){
+  turn_right_fired = false;
+  turn_left_fired = false;
+  backward_fired = false;
+  forward_fired = false;
+  down_fired = false;
+  up_fired = false;
+
+  button = document.getElementById('turn right');
+  button.className = 'btn btn-default btn-lg active';
+  button = document.getElementById('turn left');
+  button.className = 'btn btn-default btn-lg active';
+  button = document.getElementById('forward');
+  button.className = 'btn btn-default btn-lg active';
+  button = document.getElementById('backward');
+  button.className = 'btn btn-default btn-lg active';
+  button = document.getElementById('down');
+  button.className = 'btn btn-default btn-lg active';
+  button = document.getElementById('up');
+  button.className = 'btn btn-default btn-lg active';
+
+  console.log('stop');
+  $.get("/stop")
+}
 
 function stop(){
-  function stop_once(){
-        turn_right_fired = false;
-        turn_left_fired = false;
-        backward_fired = false;
-        forward_fired = false;
-        down_fired = false;
-        up_fired = false;
-
-        button = document.getElementById('turn right');
-        button.className = 'btn btn-default btn-lg active';
-        button = document.getElementById('turn left');
-        button.className = 'btn btn-default btn-lg active';
-        button = document.getElementById('forward');
-        button.className = 'btn btn-default btn-lg active';
-        button = document.getElementById('backward');
-        button.className = 'btn btn-default btn-lg active';
-        button = document.getElementById('down');
-        button.className = 'btn btn-default btn-lg active';
-        button = document.getElementById('up');
-        button.className = 'btn btn-default btn-lg active';
-
-        console.log('stop');
-        $.get("/stop")
-  }
   stop_once()
   setTimeout(stop_once(), 500)
 }
@@ -714,19 +723,16 @@ document.onkeyup = function() {
         <span class="fa fa-arrow-right" aria-hidden="true"></span>
       </button>
 
-      <p>Camera servo control with key a,s,w,d, f to reset, g to take photo</p>
-      <button id="left" type="button" class="btn btn-default btn-lg active">
-        <span class="fa fa-arrow-left" aria-hidden="true"></span>
+      <button id="stop" type="button" class="btn btn-default btn-lg active" onmousedown="stop()" ontouchstart="stop()">
+        <span class="fa fa-stop" aria-hidden="true"></span>
       </button>
+
+      <p>Camera servo control with key a,s,w,d, f to reset, g to take photo</p>
       <button id="up" type="button" class="btn btn-default btn-lg active" onmousedown="camera_up()" onmouseup="stop()" ontouchstart="camera_up()" ontouchend="stop()" ontouchcancel="stop()">
         <span class="fa fa-arrow-up" aria-hidden="true"></span>
       </button>
       <button id="down" type="button" class="btn btn-default btn-lg active" onmousedown="camera_down()" onmouseup="stop()" ontouchstart="camera_down()" ontouchend="stop()" ontouchcancel="stop()">
         <span class="fa fa-arrow-down" aria-hidden="true"></span>
-      </button>
-
-      <button id="right" type="button" class="btn btn-default btn-lg active">
-        <span class="fa fa-arrow-right" aria-hidden="true"></span>
       </button>
 
       <button id="reset" type="button" class="btn btn-default btn-lg active">
@@ -735,6 +741,10 @@ document.onkeyup = function() {
       <button id="take_photo" type="button" class="btn btn-default btn-lg active">
         <span class="fa fa-camera" aria-hidden="true"></span>
       </button>
+
+      <p><br></p>
+      <p id="info"><br></p>
+
       <br><br><br>
       <p>Back ultrasonic servo control with key z,c, x to reset, v to detect</p>
       <button id="back_uc_left" type="button" class="btn btn-default btn-lg active">

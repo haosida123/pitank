@@ -497,7 +497,7 @@ class Camera(BaseCamera):
                 # encode as a jpeg image and return it
                 # Put current DateTime on each frame
                 font = cv2.FONT_HERSHEY_SIMPLEX
-                cv2.putText(img,str(datetime.datetime.now())[:21],(10,30), font,
+                cv2.putText(img,str(datetime.datetime.now())[:21],(3,15), font,
                            .5,(0, 255, 0),2,cv2.LINE_AA)
                         #    .5,(255,255,255),2,cv2.LINE_AA)
                 # print(str(datetime.datetime.now())[:21])

@@ -1,9 +1,11 @@
 from flask import Flask, render_template, Response, request
+from flask.json import jsonify
 from camera_opencv import Camera
 # from camera import Camera
 import time  # Import the Time library
 import datetime
 from move import Move
+from info import get_cpu_tempfunc, get_cpu_use, get_ram_info
 
 app = Flask(__name__)
 
@@ -27,9 +29,9 @@ def fps():
     setfps = float(request.args.get('setfps'))
     return "OK"
 
-@app.route("/stream/")
-def stream():
-    return render_template('stream.html')
+# @app.route("/stream/")
+# def stream():
+    # return render_template('stream.html')
 
 
 def gen(camera):
@@ -45,6 +47,12 @@ def gen(camera):
 def video_feed():
     return Response(gen(Camera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/_info')
+def cpu_info():
+    #info = f"cpu temp:{get_cpu_tempfunc()}; cpu use:{get_cpu_use()}"
+    return jsonify(cpu_temp=get_cpu_tempfunc(), cpu_use=get_cpu_use(), ram=get_ram_info())
+
 
 @app.route("/forward")
 def move_forward():

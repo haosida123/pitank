@@ -5,6 +5,7 @@
 # Author      : William
 # Date        : 2019/08/28
 import psutil
+import os
 
 def get_cpu_tempfunc():
     """ Return CPU temperature """
@@ -15,7 +16,7 @@ def get_cpu_tempfunc():
             result = line
 
     result = float(result)/1000
-    result = round(result, 1)
+    result = round(result, 2)
     return str(result)
 
 
