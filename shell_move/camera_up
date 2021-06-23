@@ -1,0 +1,4 @@
+#!/bin/bash
+cd /home/pi/pitank
+#sleep 10
+python3 move.py up -time 0.2

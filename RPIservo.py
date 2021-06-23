@@ -314,6 +314,7 @@ class ServoCtrl(threading.Thread):
 
 
 if __name__ == '__main__':
+    from IPython import embed; embed() # check prms
     sc = ServoCtrl()
     sc.start()
     # sc.run()
