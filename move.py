@@ -8,6 +8,7 @@
 import time
 import RPi.GPIO as GPIO
 import RPIservo
+import argparse
 
 # motor_EN_A: Pin7  |  motor_EN_B: Pin11
 # motor_A:  Pin8,Pin10    |  motor_B: Pin13,Pin12
@@ -163,7 +164,7 @@ class Move(object):
         # def __exit__(self, exception_type, exception_value, traceback):
         destroy()
         self.servo.stop()
-        print(f"Move({args}) __exit__ called")
+        # print(f"Move({args}) __exit__ called")
 
 
 def test():
@@ -205,4 +206,27 @@ def test():
 
 
 if __name__ == '__main__':
-    test()
+    # test()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("direction", type=str)
+    parser.add_argument("-time", type=float, default=0.5)
+    parser.add_argument("-speed", type=float, default=100)
+    args = parser.parse_args()
+
+    movetime = args.time
+    direct = args.direction
+
+    with Move() as move:
+        move.speed = args.speed
+
+        if direct == "forward":
+            move.move('forward', 'no')
+        elif direct == "backward":
+            move.move('backward', 'no')
+        elif direct == "right":
+            move.move('no', 'right')
+        elif direct == "left":
+            move.move('no', 'left')
+
+        time.sleep(movetime)
+        move.stop()
